@@ -7,12 +7,12 @@ DATABASE_URL = "postgresql+psycopg2://postgres:567234@localhost:5432/rest_contac
 
 # Підключення до бази даних
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+db_Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base: DeclarativeMeta = declarative_base()
 
 def get_db():
-    db = SessionLocal()
+    db = db_Session()
     try:
         yield db
     finally:

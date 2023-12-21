@@ -4,12 +4,12 @@ from passlib.context import CryptContext
 
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
-from src.database.db import SessionLocal
+from src.database.db import get_db
 from src.database.models import User
 
 from fastapi.security import OAuth2PasswordBearer
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/auth/token")
 
 # Налаштування для хешування паролів
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -54,7 +54,7 @@ def create_refresh_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(SessionLocal)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

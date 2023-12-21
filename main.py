@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from src.routes import contacts
-from src.routes.contacts import get_db
+from src.database.db import get_db
 from src.routes.auth import router as auth_router
 
 app = FastAPI()

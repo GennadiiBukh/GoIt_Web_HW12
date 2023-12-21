@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional
-from src.database.db import SessionLocal
+from src.database.db import get_db
 from src.database.models import User
 from src.repository import contacts
 from src.schemas import ContactResponse, ContactUpdate, ContactSchema
@@ -9,12 +9,6 @@ from src.services.auth import get_current_user
 
 router = APIRouter(prefix="/contacts", tags=['contacts'])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
 def create_contact(contact: ContactSchema, db: Session = Depends(get_db),
@@ -29,6 +23,8 @@ def create_contact(contact: ContactSchema, db: Session = Depends(get_db),
 def get_contacts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db),
                  current_user: User = Depends(get_current_user)):
     db_contacts = contacts.get_contacts(db, current_user.id, skip, limit)
+    if db_contacts is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contacts not found")
     return db_contacts
 
 

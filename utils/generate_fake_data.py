@@ -3,23 +3,23 @@ import random
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from src.database.db import SessionLocal
+from src.database.db import db_Session
 from src.database.models import Contact, User
 
 def generate_fake_users(n):
     fake = Faker('uk_UA')
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    db = SessionLocal()
+    db = db_Session()
 
     # Очищення існуючих контактів і користувачів
     db.query(Contact).delete()
     db.query(User).delete()
 
-    user_ids = []
     for _ in range(n):
+        username = fake.name()
         email = fake.email()
         hashed_password = pwd_context.hash("password")  # Безпечне хешування
-        user = User(email=email, hashed_password=hashed_password)
+        user = User(username=username, email=email, hashed_password=hashed_password)
         db.add(user)
     db.commit()
 
@@ -31,7 +31,7 @@ def generate_fake_users(n):
 
 def generate_fake_contacts(n, user_ids):
     fake = Faker('uk_UA')
-    db = SessionLocal()
+    db = db_Session()
 
     # Очищення існуючих контактів
     db.query(Contact).delete()
